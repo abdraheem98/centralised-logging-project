@@ -1,0 +1,101 @@
+# ============================================================
+# AWS CloudWatch Insights – Useful Queries for Microservices
+# Copy-paste these into the CloudWatch Logs Insights console
+# ============================================================
+
+# Log Groups to query:
+#   /microservices/user-service
+#   /microservices/order-service
+#   /microservices/payment-service
+#   /microservices/inventory-service
+#   /microservices/notification-service
+#   /microservices/product-service
+#   /microservices/auth-service
+#   /microservices/cart-service
+#   /microservices/shipping-service
+#   /microservices/analytics-service
+# ============================================================
+
+
+# ── 1. All ERROR logs across all services (last 1 hour) ────────────────
+fields @timestamp, service, level, message
+| filter level = "ERROR"
+| sort @timestamp desc
+| limit 50
+
+
+# ── 2. Count errors per service ────────────────────────────────────────
+fields @timestamp, service, level
+| filter level = "ERROR"
+| stats count(*) as errorCount by service
+| sort errorCount desc
+
+
+# ── 3. Slow API requests (> 1000ms) ────────────────────────────────────
+fields @timestamp, service, path, method, duration_ms, status_code
+| filter duration_ms > 1000
+| sort duration_ms desc
+| limit 20
+
+
+# ── 4. Average response time per service ───────────────────────────────
+fields service, duration_ms
+| filter ispresent(duration_ms)
+| stats avg(duration_ms) as avg_ms, max(duration_ms) as max_ms, count(*) as requests by service
+| sort avg_ms desc
+
+
+# ── 5. Failed payment transactions ─────────────────────────────────────
+# (Query: /microservices/payment-service only)
+fields @timestamp, message, orderId, amount, error
+| filter level = "ERROR"
+| sort @timestamp desc
+
+
+# ── 6. Auth - failed login attempts ────────────────────────────────────
+# (Query: /microservices/auth-service only)
+fields @timestamp, message, email, failedCount
+| filter message like /Failed login/
+| sort @timestamp desc
+
+
+# ── 7. Out of stock events ─────────────────────────────────────────────
+# (Query: /microservices/inventory-service only)
+fields @timestamp, message, sku, name
+| filter message like /Out of stock/
+| sort @timestamp desc
+
+
+# ── 8. Notification delivery failures ─────────────────────────────────
+# (Query: /microservices/notification-service only)
+fields @timestamp, message, userId, channel
+| filter message like /delivery failed/
+| sort @timestamp desc
+
+
+# ── 9. HTTP status code distribution ───────────────────────────────────
+fields service, status_code
+| filter ispresent(status_code)
+| stats count(*) as count by service, status_code
+| sort service, status_code
+
+
+# ── 10. Requests per minute by service ─────────────────────────────────
+fields @timestamp, service
+| filter ispresent(service)
+| stats count(*) as rps by bin(1m), service
+| sort @timestamp desc
+
+
+# ── 11. Correlation ID trace - follow one request through all services ─
+# Replace CORRELATION_ID with an actual ID from your logs
+fields @timestamp, service, level, message, path, status_code, duration_ms
+| filter correlation_id = "REPLACE-WITH-ACTUAL-ID"
+| sort @timestamp asc
+
+
+# ── 12. Shipment status transitions ────────────────────────────────────
+# (Query: /microservices/shipping-service only)
+fields @timestamp, shipmentId, newStatus, carrier
+| filter message like /Shipment status updated/
+| sort @timestamp desc

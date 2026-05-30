@@ -1,0 +1,68 @@
+{
+  "_comment": "Kibana Index Pattern and Dashboard Setup Instructions",
+  "step1_create_index_pattern": {
+    "url": "http://localhost:5601/app/management/kibana/dataViews",
+    "actions": [
+      "Click 'Create data view'",
+      "Name: Microservices All Logs",
+      "Index pattern: microservices-all-*",
+      "Timestamp field: @timestamp",
+      "Click Save"
+    ]
+  },
+  "step2_per_service_patterns": {
+    "patterns": [
+      "microservices-logs-user-service-*",
+      "microservices-logs-order-service-*",
+      "microservices-logs-payment-service-*",
+      "microservices-logs-inventory-service-*",
+      "microservices-logs-notification-service-*",
+      "microservices-logs-product-service-*",
+      "microservices-logs-auth-service-*",
+      "microservices-logs-cart-service-*",
+      "microservices-logs-shipping-service-*",
+      "microservices-logs-analytics-service-*"
+    ]
+  },
+  "step3_discover": {
+    "url": "http://localhost:5601/app/discover",
+    "useful_filters": [
+      "level: ERROR",
+      "service: payment-service",
+      "duration_ms > 1000",
+      "NOT level: DEBUG"
+    ]
+  },
+  "step4_dashboard_panels": [
+    {
+      "panel": "Log Volume Over Time",
+      "type": "Area Chart",
+      "config": "Date histogram on @timestamp, split by service"
+    },
+    {
+      "panel": "Error Rate by Service",
+      "type": "Bar Chart",
+      "config": "Filter level=ERROR, group by service"
+    },
+    {
+      "panel": "Avg Response Time",
+      "type": "Gauge",
+      "config": "Average of duration_ms grouped by service"
+    },
+    {
+      "panel": "Log Level Distribution",
+      "type": "Pie Chart",
+      "config": "Terms aggregation on level field"
+    },
+    {
+      "panel": "Recent Errors",
+      "type": "Data Table",
+      "config": "Filter ERROR, show timestamp/service/message/stack"
+    },
+    {
+      "panel": "Slow Requests",
+      "type": "Data Table",
+      "config": "Filter duration_ms > 1000, sort desc"
+    }
+  ]
+}

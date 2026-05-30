@@ -1,0 +1,105 @@
+{
+  "agent": {
+    "metrics_collection_interval": 60,
+    "logfile": "/opt/aws/amazon-cloudwatch-agent/logs/amazon-cloudwatch-agent.log"
+  },
+  "logs": {
+    "logs_collected": {
+      "files": {
+        "collect_list": [
+          {
+            "file_path": "/var/log/microservices/user-service/*.log",
+            "log_group_name": "/microservices/user-service",
+            "log_stream_name": "{instance_id}/user-service",
+            "timestamp_format": "%Y-%m-%dT%H:%M:%S",
+            "multi_line_start_pattern": "^\\d{4}-\\d{2}-\\d{2}",
+            "retention_in_days": 14
+          },
+          {
+            "file_path": "/var/log/microservices/order-service/*.log",
+            "log_group_name": "/microservices/order-service",
+            "log_stream_name": "{instance_id}/order-service",
+            "timestamp_format": "%Y-%m-%dT%H:%M:%S",
+            "retention_in_days": 14
+          },
+          {
+            "file_path": "/var/log/microservices/payment-service/*.log",
+            "log_group_name": "/microservices/payment-service",
+            "log_stream_name": "{instance_id}/payment-service",
+            "timestamp_format": "%Y-%m-%dT%H:%M:%S",
+            "retention_in_days": 30
+          },
+          {
+            "file_path": "/var/log/microservices/inventory-service/*.log",
+            "log_group_name": "/microservices/inventory-service",
+            "log_stream_name": "{instance_id}/inventory-service",
+            "timestamp_format": "%Y-%m-%dT%H:%M:%S",
+            "retention_in_days": 14
+          },
+          {
+            "file_path": "/var/log/microservices/notification-service/*.log",
+            "log_group_name": "/microservices/notification-service",
+            "log_stream_name": "{instance_id}/notification-service",
+            "timestamp_format": "%Y-%m-%dT%H:%M:%S",
+            "retention_in_days": 14
+          },
+          {
+            "file_path": "/var/log/microservices/product-service/*.log",
+            "log_group_name": "/microservices/product-service",
+            "log_stream_name": "{instance_id}/product-service",
+            "timestamp_format": "%Y-%m-%dT%H:%M:%S",
+            "retention_in_days": 14
+          },
+          {
+            "file_path": "/var/log/microservices/auth-service/*.log",
+            "log_group_name": "/microservices/auth-service",
+            "log_stream_name": "{instance_id}/auth-service",
+            "timestamp_format": "%Y-%m-%dT%H:%M:%S",
+            "retention_in_days": 90
+          },
+          {
+            "file_path": "/var/log/microservices/cart-service/*.log",
+            "log_group_name": "/microservices/cart-service",
+            "log_stream_name": "{instance_id}/cart-service",
+            "timestamp_format": "%Y-%m-%dT%H:%M:%S",
+            "retention_in_days": 14
+          },
+          {
+            "file_path": "/var/log/microservices/shipping-service/*.log",
+            "log_group_name": "/microservices/shipping-service",
+            "log_stream_name": "{instance_id}/shipping-service",
+            "timestamp_format": "%Y-%m-%dT%H:%M:%S",
+            "retention_in_days": 30
+          },
+          {
+            "file_path": "/var/log/microservices/analytics-service/*.log",
+            "log_group_name": "/microservices/analytics-service",
+            "log_stream_name": "{instance_id}/analytics-service",
+            "timestamp_format": "%Y-%m-%dT%H:%M:%S",
+            "retention_in_days": 60
+          }
+        ]
+      }
+    },
+    "log_stream_name": "microservices-combined",
+    "force_flush_interval": 15
+  },
+  "metrics": {
+    "namespace": "Microservices/Performance",
+    "metrics_collected": {
+      "cpu": {
+        "measurement": ["cpu_usage_idle", "cpu_usage_user", "cpu_usage_system"],
+        "metrics_collection_interval": 60
+      },
+      "mem": {
+        "measurement": ["mem_used_percent"],
+        "metrics_collection_interval": 60
+      },
+      "disk": {
+        "measurement": ["disk_used_percent"],
+        "resources": ["/"],
+        "metrics_collection_interval": 60
+      }
+    }
+  }
+}
